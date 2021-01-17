@@ -1,0 +1,194 @@
+﻿<Window x:Class="ChatBot.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:clases="clr-namespace:ChatBot.Clases"
+        xmlns:emisor="clr-namespace:ChatBot.Clases;assembly=ChatBot"
+        mc:Ignorable="d"
+        Title="ChatBot"
+        Icon="robot.ico"
+        Height="600" Width="400"
+        MinHeight="250" MinWidth="200">
+
+    <Window.Resources>
+        <!-- Cambiamos en Border: BorderBrush a Black y BorderThickness a 2 -->
+        <!-- FALTA QUITAR EL FOCO Y SE PONGA OTRA VEZ EN NEGRO -->
+        <ControlTemplate x:Key="TextBoxControlTemplate" TargetType="{x:Type TextBox}">
+            <Border x:Name="border" 
+                    BorderBrush="Black" 
+                    BorderThickness="2" 
+                    Background="{TemplateBinding Background}" 
+                    SnapsToDevicePixels="True">
+                <ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" TargetName="border" Value="0.56"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" TargetName="border" Value="#FF7EB4EA"/>
+                </Trigger>
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="BorderBrush" TargetName="border" Value="#FF569DE5"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <Style TargetType="Border" x:Key="cuadroMensaje">
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Setter Property="Margin" Value="10,5"/>
+
+            <Setter Property="Background" Value="LawnGreen"/>
+            <Setter Property="DockPanel.Dock" Value="Left"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=Emisor}" Value="{x:Static emisor:Emisor.Robot}">
+                    <Setter Property="Background" Value="MediumTurquoise"/>
+                    <Setter Property="DockPanel.Dock" Value="Right"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="Image" x:Key="imagenMensaje">
+            <Setter Property="Width" Value="20"/>
+            <Setter Property="Margin" Value="5,5,5,0"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=Emisor}" Value="{x:Static emisor:Emisor.Usuario}">
+                    <Setter Property="Source" Value="hombre.png"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Emisor}" Value="{x:Static emisor:Emisor.Robot}">
+                    <Setter Property="Source" Value="robot.png"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <DataTemplate DataType="{x:Type clases:Mensaje}">
+            <DockPanel LastChildFill="False">
+                <Border Style="{StaticResource cuadroMensaje}">
+                    <StackPanel>
+                        <DockPanel>
+                            <Image Style="{StaticResource imagenMensaje}"/>
+                            <TextBlock Text="{Binding Path=Emisor}"
+                                       FontWeight="Bold"
+                                       FontSize="15"
+                                       Margin="5,10,5,0"/>
+                        </DockPanel>
+
+                        <TextBlock Text="{Binding Path=Texto}"
+                                   TextWrapping="Wrap"
+                                   FontSize="15"
+                                   Margin="5"/>
+                    </StackPanel>
+                </Border>
+            </DockPanel>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Window.CommandBindings>
+        <!-- Nuevo mensaje -->
+        <CommandBinding Command="clases:CustomCommands.New"
+                        Executed="New_CommandBinding_Executed"
+                        CanExecute="New_CommandBinding_CanExecute"/>
+        <!-- Guardar mensajes -->
+        <CommandBinding Command="clases:CustomCommands.Save"
+                        Executed="Save_CommandBinding_Executed"
+                        CanExecute="Save_CommandBinding_CanExecute"/>
+        <!-- Salir -->
+        <CommandBinding Command="clases:CustomCommands.Exit"
+                        Executed="Exit_CommandBinding_Executed"/>
+        <!-- Ajustes -->
+        <CommandBinding Command="clases:CustomCommands.Config"
+                        Executed="Config_CommandBinding_Executed"
+                        CanExecute="Config_CommandBinding_CanExecute"/>
+        <!-- Comprobar conexión -->
+        <CommandBinding Command="clases:CustomCommands.Check"
+                        Executed="Check_CommandBinding_Executed"/>
+        <!-- Enviar mensaje -->
+        <CommandBinding Command="clases:CustomCommands.Send"
+                        Executed="Send_CommandBinding_Executed"
+                        CanExecute="Send_CommandBinding_CanExecute"/>
+    </Window.CommandBindings>
+
+    <DockPanel Background="AntiqueWhite">
+        <StackPanel DockPanel.Dock="Top">
+            <Menu>
+                <MenuItem Header="_Archivo">
+                    <MenuItem Header="_Nueva conversación"
+                              Command="clases:CustomCommands.New">
+                        <MenuItem.Icon>
+                            <Image Source="new.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="_Guardar conversación..."
+                              Command="clases:CustomCommands.Save">
+                        <MenuItem.Icon>
+                            <Image Source="save.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="_Salir"
+                              Command="clases:CustomCommands.Exit">
+                        <MenuItem.Icon>
+                            <Image Source="exit.ico"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="_Herramientas">
+                    <MenuItem Header="_Configuración..."
+                              Command="clases:CustomCommands.Config">
+                        <MenuItem.Icon>
+                            <Image Source="config.ico"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="C_omprobar conexión"
+                              Command="clases:CustomCommands.Check">
+                        <MenuItem.Icon>
+                            <Image Source="check.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+            </Menu>
+
+            <ToolBarTray>
+                <ToolBar>
+                    <Button ToolTip="Nueva conversación"
+                            Command="clases:CustomCommands.New">
+                        <Image Source="new.png"/>
+                    </Button>
+                    <Button ToolTip="Guardar conversación"
+                            Command="clases:CustomCommands.Save">
+                        <Image Source="save.png"/>
+                    </Button>
+                    <Separator/>
+                    <Button Command="clases:CustomCommands.Config">
+                        <Image Source="config.ico"/>
+                    </Button>
+                    <Button ToolTip="Comprobar conexión"
+                            Command="clases:CustomCommands.Check">
+                        <Image Source="check.png" Width="30"/>
+                    </Button>
+                    <Separator/>
+                    <Button ToolTip="Salir"
+                            Command="clases:CustomCommands.Exit">
+                        <Image Source="exit.ico"/>
+                    </Button>
+                </ToolBar>
+            </ToolBarTray>
+        </StackPanel>
+
+        <DockPanel DockPanel.Dock="Bottom">
+            <Button DockPanel.Dock="Right" Width="35">
+                <Image Source="send.png"/>
+            </Button>
+            <TextBox Template="{DynamicResource TextBoxControlTemplate}"
+                     x:Name="escribiendoUsuarioTextBox"></TextBox>
+        </DockPanel>
+
+        <ItemsControl x:Name="listaMensajes"
+                      ItemsSource="{Binding}"
+                      ScrollViewer.VerticalScrollBarVisibility="Visible">
+
+        </ItemsControl>
+    </DockPanel>
+</Window>
